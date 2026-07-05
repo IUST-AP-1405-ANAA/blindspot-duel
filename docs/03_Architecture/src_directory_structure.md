@@ -19,12 +19,15 @@
     │   ├── i_database.py
     │   ├── i_renderable.py
     │   ├── i_collidable.py
+    │   ├── i_audio_player.py
     │   └── i_state.py
     ├── core/
     │   ├── bootstrap.py
     │   ├── game_engine.py
     │   ├── state_manager.py
     │   ├── event_handler.py
+    │   ├── input_mapper.py
+    │   ├── auth_orchestrator.py
     │   └── delta_clock.py
     ├── entities/
     │   ├── base/
@@ -59,8 +62,12 @@
     │   │   └── floating_number.py
     │   ├── hud/
     │   │   └── player_dashboard.py
+    │   ├── vfx/
+    │   │   ├── animation_manager.py 
+    │   │   └── floating_text.py
     │   └── screens/
     │       ├── start_menu_screen.py
+    │       ├── auth_screen.py
     │       └── leaderboard_screen.py
     ├── database/
     │   ├── connection_manager.py
@@ -70,7 +77,8 @@
     │   └── sqlite_repository.py
     └── utils/
         ├── resource_loader.py
-        └── exception_logger.py
+        ├── exception_logger.py
+        └── audio_manager.py
 
 ---
 
@@ -94,7 +102,9 @@
 * **`game_engine.py`:** ارکستراتور اصلی که فازهای حلقه `while` را بر اساس قراردادها فراخوانی می‌کند.
 * state_manager.py: مدیریت وضعیت‌های چهارگانه برنامه بر اساس [[state_machine.md]].
 * event_handler.py: فقط مسئول پردازش pygame.event.get() و تبدیل آن‌ها به سیگنال‌های قابل فهم برای بقیه ماژول‌ها.
-* clock.py: مدیریت Delta Time و تبدیل تیک‌های Pygame به ثانیه‌های واقعی برای سیستم زمان‌سنجی بازیکنان.
+ * **`input_mapper.py`:**  ترجمه‌کننده کلیدهای خام کیبورد به فرمان‌های تفکیک‌شده برای بازیکن یک و دو (مثل `P1_SHOOT`). 
+ * **`auth_orchestrator.py`:**  مدیر جریان احراز هویت یکپارچه که وظیفه تبادل داده بین فرم ورود و دیتابیس را دارد.
+* delta_clock.py: مدیریت Delta Time و تبدیل تیک‌های Pygame به ثانیه‌های واقعی برای سیستم زمان‌سنجی بازیکنان.
 
 ### ۴. لایه موجودیت‌ها (`/src/entities/`)
 **نقش معماری:** حفظ وضعیت (State Management) و رعایت اصل تغییرناپذیری در حد امکان.
@@ -102,34 +112,45 @@
 پیاده‌سازی دقیق OOP. این فایل‌ها فقط داده‌ها (State) را نگه می‌دارند.
 
 * base/game_object.py: کلاس بنیادین تمام اشیاء صفحه (شامل ویژگی‌های x, y و وضعیت زنده بودن).
-* player/player_data.py: کپسوله‌سازی اطلاعات انتزاعی بازیکن (نام، رنگ، متدهای کسر تیر و زمان).
+* player/player_model.py: کپسوله‌سازی اطلاعات انتزاعی بازیکن (نام، رنگ، متدهای کسر تیر و زمان).
 * player/crosshair.py: کپسوله‌سازی مختصات نشانگر و وضعیت is_visible (مخفی بودن قبل از شلیک اول).
 * targets/target_base.py: والد اصلی تمام سیبل‌ها و پاورآپ‌ها.
+* targets/standard_target.py: پیاده‌سازی سیبل‌های استاندارد.
 * items/*: کلاسی برای هر آیتم، که متد apply_effect() آن به صورت پلی‌مورفیک (چندریختی) اورراید (Override) شده است.
 ### ۵. لایه مکانیک‌ها (`/src/mechanics/`)
 **نقش معماری:** توابع خالص (Pure Functions) و بیزینس لاجیک ایزوله.
 تمامی فایل‌های این پوشه (مانند `math_formulas.py`) باید تا حد امکان به شکل توابعی نوشته شوند که ورودی می‌گیرند و خروجی محاسبه‌شده را برمی‌گردانند، بدون اینکه متغیرهای Global را دستکاری کنند.
 تمام محاسبات ریاضی و منطق فیزیک ایزوله شده در این پوشه است.
 
-* physics/movement.py: دریافت ورودی کیبورد و جابجا کردن مختصات crosshair.py.
-* physics/boundaries.py: اطمینان از اینکه مختصات نشانگرها از WIDTH و HEIGHT خارج نمی‌شود.
-* combat/hitbox_collision.py: الگوریتم AABB یا بررسی تقاطع نقطه شلیک با شعاع سیبل‌ها.
-* scoring/distance_math.py: محاسبه خالص ریاضی با فرمول فیثاغورس.
-* scoring/combo_system.py: نگه داشتن وضعیت (State) شلیک‌های متوالی و ریست کردن آن‌ها در صورت خطا.
-* spawning/target_manager.py: کنترل تعداد سیبل‌های روی صفحه و درخواست تولید سیبل جدید از random_generator هنگام انهدام سیبل قبلی.
+* physics/movement_system.py: دریافت ورودی کیبورد و جابجا کردن مختصات crosshair.py.
+* physics/boundary_clamp.py: اطمینان از اینکه مختصات نشانگرها از WIDTH و HEIGHT خارج نمی‌شود.
+* combat/shooting_logic.py: مدیریت منطق شلیک.
+* combat/collision_detector.py: الگوریتم AABB یا بررسی تقاطع نقطه شلیک با شعاع سیبل‌ها.
+* scoring/math_formulas.py: محاسبه خالص ریاضی با فرمول فیثاغورس.
+* scoring/combo_tracker.py: نگه داشتن وضعیت (State) شلیک‌های متوالی و ریست کردن آن‌ها در صورت خطا.
+* spawning/coordinate_generator.py: ایجاد مختصات تصادفی.
+* spawning/target_lifecycle.py: کنترل چرخه حیات سیبل‌ها در بازی.
 
 ### ۶. لایه رابط کاربری (/src/ui/)
 تمامی فراخوانی‌های pygame.draw یا رندر فونت منحصراً در این دایرکتوری انجام می‌شود.
 
-* components/floating_text.py: منطق گرافیکی نمایش اعداد شناور (مثل +3) که پس از یک ثانیه محو می‌شوند (Fade-out).
-* hud/player_stats_view.py: رسم گرافیکی اطلاعات تیر، امتیاز و زمان player_data در دو گوشه بالای صفحه.
-* screens/start_menu.py: مدیریت فیلدهای متنی (Text Inputs) برای دریافت نام بازیکنان پیش از شروع بازی.
-* screens/leaderboard_view.py: دریافت دیتای SQL و رسم یک جدول گرافیکی از نفرات برتر در پایان بازی.
-۶. لایه پایگاه داده (/src/database/)
-* connection.py: مدیریت اتصال به فایل sqlite3 و اطمینان از بسته شدن ایمن کانکشن (Context Manager).
+* components/text_renderer.py: رندر متن‌ها در صفحه.
+* components/floating_number.py: اعداد شناور در صفحه.
+* hud/player_dashboard.py: رسم گرافیکی اطلاعات تیر، امتیاز و زمان بازیکن.
+* vfx/animation_manager.py: پردازش و به‌روزرسانی انیمیشن‌های بصری با استفاده از زمان دلتا (dt).
+* vfx/floating_text.py: نمایش اعداد شناور امتیاز که محو می‌شوند (Fade-out).
+* screens/start_menu_screen.py: مدیریت فیلدهای متنی برای دریافت نام بازیکنان.
+* screens/auth_screen.py: رسم فرم ورود داده برای نام کاربری و رمز عبور.
+* screens/leaderboard_screen.py: رسم یک جدول گرافیکی از نفرات برتر.
+
+### ۷. لایه پایگاه داده (/src/database/)
+* connection_manager.py: مدیریت اتصال به فایل sqlite3 و اطمینان از بسته شدن ایمن کانکشن (Context Manager).
 * models.py: تعریف ساختار جدولی دیتابیس (Data Classes).
+* dtos.py: کلاس‌های انتقال داده.
 * queries.py: فقط نگهدارنده رشته‌های خام SQL (دستورات SELECT و INSERT).
-* repository.py: متدهای سطح بالا (مثل save_match_results()) که توسط state_manager.py فراخوانی می‌شوند.
+* sqlite_repository.py: متدهای سطح بالا (مثل save_match_results()) که توسط state_manager.py فراخوانی می‌شوند.
+  
 ### ۸. لایه ابزارها (/src/utils/)
-* asset_loader.py: لود کردن ایمن تصاویر و صداها از پوشه assets/.
-* logger.py: سیستم ثبت لاگ برای دیباگ کردن راحت‌تر رفتار آیتم‌ها و تقاطع‌ها در ترمینال.
+* resource_loader.py: لود کردن ایمن تصاویر و صداها از پوشه assets/.
+* exception_logger.py: سیستم ثبت لاگ برای دیباگ کردن خطاها.
+* audio_manager.py: پیاده‌ساز قرارداد صوتی با قابلیت خواندن فایل‌های صوتی و تخصیص کانال‌های همزمان پخش برای جلوگیری از تداخل.
