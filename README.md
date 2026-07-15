@@ -10,7 +10,7 @@
 
 ### 🎥 ویدیو گیم‌پلی بازی
 
-https://github.com/IUST-AP-1405-ANAA/blindspot-duel/raw/main/docs/media/gameplay_demo.mp4
+https://github.com/user-attachments/assets/2e5cad1f-8175-470c-81c7-1db4acae39ca
 
 ---
 
