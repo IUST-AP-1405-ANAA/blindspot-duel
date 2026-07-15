@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class LeaderboardEntryDTO:
-    player_name = str
-    score = int
-    rank = int
+    player_name : str
+    score : int
+    rank : int
     def __post_init__(self):
         if not self.player_name or len(self.player_name.strip()) == 0:
             raise ValueError("player name cannot be empty")

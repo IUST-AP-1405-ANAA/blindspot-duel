@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass
-class MachHistory:
+class MatchHistory:
     id: Optional[int] = None
     player_name: str = ""
     score: int = 0
@@ -21,8 +21,8 @@ class MachHistory:
 
 @dataclass
 class User:
-    username = str
-    password_hash = str
+    username : str
+    password_hash : str
 
     def __post_init__(self):
         if not self.username or len(self.username.strip()) < 3:
