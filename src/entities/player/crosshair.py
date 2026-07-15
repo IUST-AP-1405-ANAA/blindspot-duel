@@ -2,7 +2,7 @@
 Crosshair state and position.
 """
 from src.entities.base.game_object import GameObject
-from src.config.settings import RETICLE_RADIUS
+import src.config.settings as cfg
 
 
 class Crosshair(GameObject):
@@ -10,7 +10,7 @@ class Crosshair(GameObject):
     Represents the player's aiming point.
     """
 
-    def __init__(self, x: float, y: float, hitbox_radius: float = RETICLE_RADIUS):
+    def __init__(self, x: float, y: float, hitbox_radius: float = cfg.RETICLE_RADIUS):
         super().__init__(x, y)
         self._validate_hitbox_radius(hitbox_radius)
         self._is_visible = False

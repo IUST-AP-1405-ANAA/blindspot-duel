@@ -3,14 +3,7 @@ Upgraded player stats dashboard with neon bars and boxes.
 """
 import pygame
 from src.ui.components.text_renderer import TextRenderer
-from src.config.settings import (
-    WIDTH, HEIGHT, DEFAULT_AMMO, DEFAULT_TIME, HUD_MARGIN_X, HUD_MARGIN_Y,
-    HUD_BOX_WIDTH, HUD_BOX_HEIGHT, HUD_BORDER_RADIUS, HUD_BORDER_WIDTH,
-    HUD_TEXT_OFFSET_X, HUD_COMBO_OFFSET_X, HUD_TIME_BAR_WIDTH, HUD_TIME_BAR_HEIGHT,
-    HUD_TIME_BAR_OFFSET_X, HUD_TIME_BAR_OFFSET_Y, HUD_TIME_TEXT_OFFSET_X,
-    HUD_TIME_TEXT_OFFSET_Y, HUD_AMMO_DOT_SPACING, HUD_AMMO_DOT_RADIUS,
-    HUD_AMMO_DOT_OFFSET_X, HUD_AMMO_DOT_OFFSET_Y, HUD_GLITCH_TEXT_OFFSET_Y
-)
+import src.config.settings as cfg
 from src.config.thresholds import (
     MIN_COMBO_FOR_TEXT, HUD_TIME_WARN_HIGH, HUD_TIME_WARN_LOW
 )
@@ -31,29 +24,29 @@ class PlayerDashboard:
 
     def draw(self, p1, p2, surface) -> None:
         # Draw P1 Stats (Left Corner)
-        self.draw_player_hud(p1, HUD_MARGIN_X, HUD_MARGIN_Y, surface, is_left=True)
+        self.draw_player_hud(p1, cfg.HUD_MARGIN_X, cfg.HUD_MARGIN_Y, surface, is_left=True)
 
         # Draw P2 Stats (Right Corner)
-        self.draw_player_hud(p2, WIDTH - HUD_MARGIN_X, HUD_MARGIN_Y, surface, is_left=False)
+        self.draw_player_hud(p2, cfg.WIDTH - cfg.HUD_MARGIN_X, cfg.HUD_MARGIN_Y, surface, is_left=False)
 
     def draw_player_hud(self, p, x: float, y: float, surface, is_left: bool) -> None:
         theme_color = P1_COLOR if is_left else P2_COLOR
         align = "left" if is_left else "right"
 
         # Draw background container box
-        box_width = HUD_BOX_WIDTH
-        box_height = HUD_BOX_HEIGHT
+        box_width = cfg.HUD_BOX_WIDTH
+        box_height = cfg.HUD_BOX_HEIGHT
         bx = int(x) if is_left else int(x - box_width)
         by = int(y)
 
         # Transparent box background
         container = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
         container.fill(HUD_BG_COLOR)  # Dark transparent backing
-        pygame.draw.rect(container, theme_color, (0, 0, box_width, box_height), HUD_BORDER_WIDTH, border_radius=HUD_BORDER_RADIUS)
+        pygame.draw.rect(container, theme_color, (0, 0, box_width, box_height), cfg.HUD_BORDER_WIDTH, border_radius=cfg.HUD_BORDER_RADIUS)
         surface.blit(container, (bx, by))
 
         # Text positioning offsets
-        offset_x = HUD_TEXT_OFFSET_X if is_left else -HUD_TEXT_OFFSET_X
+        offset_x = cfg.HUD_TEXT_OFFSET_X if is_left else -cfg.HUD_TEXT_OFFSET_X
         tx = x + offset_x
 
         # Player name & Score
@@ -64,20 +57,20 @@ class PlayerDashboard:
 
         # Display Combo
         if p.combo >= MIN_COMBO_FOR_TEXT:
-            combo_offset = HUD_COMBO_OFFSET_X if is_left else -HUD_COMBO_OFFSET_X
+            combo_offset = cfg.HUD_COMBO_OFFSET_X if is_left else -cfg.HUD_COMBO_OFFSET_X
             self.text_renderer.render_text(f"COMBO x{p.combo}!", tx + combo_offset, y + 26, surface, color=COMBO_COLOR, size=14, align=align)
 
         # Draw Time bar
-        time_bar_width = HUD_TIME_BAR_WIDTH
-        time_bar_height = HUD_TIME_BAR_HEIGHT
-        tbx = bx + HUD_TIME_BAR_OFFSET_X if is_left else bx + (box_width - time_bar_width - HUD_TIME_BAR_OFFSET_X)
-        tby = by + HUD_TIME_BAR_OFFSET_Y
+        time_bar_width = cfg.HUD_TIME_BAR_WIDTH
+        time_bar_height = cfg.HUD_TIME_BAR_HEIGHT
+        tbx = bx + cfg.HUD_TIME_BAR_OFFSET_X if is_left else bx + (box_width - time_bar_width - cfg.HUD_TIME_BAR_OFFSET_X)
+        tby = by + cfg.HUD_TIME_BAR_OFFSET_Y
 
         # Base bar container
         pygame.draw.rect(surface, HUD_TIME_BAR_BG_COLOR, (tbx, tby, time_bar_width, time_bar_height), border_radius=3)
 
         # Active bar fill
-        time_pct = max(0.0, min(1.0, p.time_remaining / DEFAULT_TIME))
+        time_pct = max(0.0, min(1.0, p.time_remaining / cfg.DEFAULT_TIME))
         fill_width = int(time_bar_width * time_pct)
         # Select color based on warning thresholds
         if time_pct > HUD_TIME_WARN_HIGH:
@@ -92,9 +85,9 @@ class PlayerDashboard:
 
         # Display time number
         time_num = f"{p.time_remaining:.1f}s"
-        t_num_x = tbx + time_bar_width + HUD_TIME_TEXT_OFFSET_X if is_left else tbx - HUD_TIME_TEXT_OFFSET_X
+        t_num_x = tbx + time_bar_width + cfg.HUD_TIME_TEXT_OFFSET_X if is_left else tbx - cfg.HUD_TIME_TEXT_OFFSET_X
         t_num_align = "left" if is_left else "right"
-        self.text_renderer.render_text(time_num, t_num_x, tby + HUD_TIME_TEXT_OFFSET_Y, surface, color=bar_color, size=12, align=t_num_align)
+        self.text_renderer.render_text(time_num, t_num_x, tby + cfg.HUD_TIME_TEXT_OFFSET_Y, surface, color=bar_color, size=12, align=t_num_align)
 
         # Draw Ammo indicator
         abx = bx + 10 if is_left else bx + 10
@@ -102,13 +95,13 @@ class PlayerDashboard:
         self.text_renderer.render_text("AMMO:", abx, aby, surface, color=HUD_LABEL_COLOR, size=11, align="left")
 
         # Draw bullet dots
-        for idx in range(DEFAULT_AMMO):
+        for idx in range(cfg.DEFAULT_AMMO):
             dot_color = AMMO_COLOR if idx < p.ammo else HUD_EMPTY_AMMO_COLOR
-            dot_x = abx + HUD_AMMO_DOT_OFFSET_X + idx * HUD_AMMO_DOT_SPACING
-            pygame.draw.circle(surface, dot_color, (dot_x, aby + HUD_AMMO_DOT_OFFSET_Y), HUD_AMMO_DOT_RADIUS)
+            dot_x = abx + cfg.HUD_AMMO_DOT_OFFSET_X + idx * cfg.HUD_AMMO_DOT_SPACING
+            pygame.draw.circle(surface, dot_color, (dot_x, aby + cfg.HUD_AMMO_DOT_OFFSET_Y), cfg.HUD_AMMO_DOT_RADIUS)
 
         # Draw Glitch status
         if p.glitch_timer > 0.0:
             glitch_x = bx + box_width / 2
-            glitch_y = by + HUD_GLITCH_TEXT_OFFSET_Y
+            glitch_y = by + cfg.HUD_GLITCH_TEXT_OFFSET_Y
             self.text_renderer.render_text("GLITCH ACTIVE!", glitch_x, glitch_y, surface, color=GLITCH_COLOR, size=12, align="center")

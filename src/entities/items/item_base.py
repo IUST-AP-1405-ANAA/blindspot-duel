@@ -2,7 +2,7 @@
 Base class for special items.
 """
 from src.entities.targets.target_base import Target
-from src.config.settings import ITEM_RADIUS, ITEM_BASE_SCORE
+import src.config.settings as cfg
 
 
 class Item(Target):
@@ -10,7 +10,7 @@ class Item(Target):
     Abstract base item granting special effects.
     """
 
-    def __init__(self, x: float, y: float, radius: float = ITEM_RADIUS, base_score: int = ITEM_BASE_SCORE):
+    def __init__(self, x: float, y: float, radius: float = cfg.ITEM_RADIUS, base_score: int = cfg.ITEM_BASE_SCORE):
         super().__init__(x, y, radius, base_score)
 
     def apply_effect(self, player, opponent) -> None:

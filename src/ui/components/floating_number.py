@@ -1,5 +1,5 @@
 from src.config.colors import VFX_FLOATING_TEXT_COLOR
-from src.config.settings import VFX_DEFAULT_SPEED, VFX_DEFAULT_DURATION
+import src.config.settings as cfg
 
 
 class FloatingNumber:
@@ -10,9 +10,9 @@ class FloatingNumber:
         if color is None:
             color = VFX_FLOATING_TEXT_COLOR
         if speed is None:
-            speed = VFX_DEFAULT_SPEED
+            speed = cfg.VFX_DEFAULT_SPEED
         if duration is None:
-            duration = VFX_DEFAULT_DURATION
+            duration = cfg.VFX_DEFAULT_DURATION
         self.text = text
         self.x = x
         self.y = y
