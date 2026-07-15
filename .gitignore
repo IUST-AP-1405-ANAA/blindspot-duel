@@ -88,6 +88,5 @@ Thumbs.db
 *.swo
 
 # Project/Game logs & data files
-generate_sounds.py
 game_errors.log
 user_settings.json
