@@ -13,7 +13,7 @@ from src.utils.exception_logger import ExceptionLogger
 from src.ui.vfx.animation_manager import AnimationManager
 from src.ui.vfx.floating_text import FloatingTextVFX
 from src.config.colors import BG_COLOR
-from src.config.settings import DEFAULT_BG_MUSIC, INITIAL_STATE
+import src.config.settings as cfg
 
 class GameEngine:
     """
@@ -43,10 +43,10 @@ class GameEngine:
     def run(self) -> None:
         """The main while loop (events -> update -> render)."""
         ExceptionLogger.log_info("Game Engine started.")
-        self.audio.play_background_music(DEFAULT_BG_MUSIC)
+        self.audio.play_background_music(cfg.DEFAULT_BG_MUSIC)
         
         # Transition to initial state
-        self.state_manager.change_state(INITIAL_STATE)
+        self.state_manager.change_state(cfg.INITIAL_STATE)
         
         while self.is_running and self.state_manager.is_running:
             # Phase 0: Delta Time

@@ -4,15 +4,15 @@ Custom logger.
 import logging
 import sys
 
-from src.config.settings import LOG_LEVEL, LOG_FORMAT, LOG_FILE_PATH
+import src.config.settings as cfg
 
 # Configure python standard logging
-log_level_val = getattr(logging, LOG_LEVEL, logging.INFO)
+log_level_val = getattr(logging, cfg.LOG_LEVEL, logging.INFO)
 logging.basicConfig(
     level=log_level_val,
-    format=LOG_FORMAT,
+    format=cfg.LOG_FORMAT,
     handlers=[
-        logging.FileHandler(LOG_FILE_PATH, encoding="utf-8"),
+        logging.FileHandler(cfg.LOG_FILE_PATH, encoding="utf-8"),
         logging.StreamHandler(sys.stdout)
     ]
 )

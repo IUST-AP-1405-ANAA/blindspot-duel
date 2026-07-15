@@ -2,12 +2,7 @@ import pygame
 import random
 import math
 
-from src.config.settings import (
-    VFX_SHOCKWAVE_MAX_RADIUS, VFX_SHOCKWAVE_SPEED, VFX_SHOCKWAVE_START_RADIUS,
-    VFX_SHOCKWAVE_WIDTH, VFX_SPAWN_SPEED, VFX_SPAWN_DURATION, VFX_FONT_SIZE,
-    VFX_SHADOW_OFFSET, VFX_EXPLOSION_COUNT, VFX_EXPLOSION_SPEED_RANGE,
-    VFX_EXPLOSION_SIZE_RANGE, VFX_EXPLOSION_LIFETIME_RANGE
-)
+import src.config.settings as cfg
 from src.config.colors import VFX_FLOATING_TEXT_COLOR, SHADOW_COLOR
 
 
@@ -30,13 +25,13 @@ class Particle:
 
 
 class Shockwave:
-    def __init__(self, x, y, color, max_radius=VFX_SHOCKWAVE_MAX_RADIUS, speed=VFX_SHOCKWAVE_SPEED):
+    def __init__(self, x, y, color, max_radius=cfg.VFX_SHOCKWAVE_MAX_RADIUS, speed=cfg.VFX_SHOCKWAVE_SPEED):
         self.x = x
         self.y = y
         self.color = color
         self.max_radius = max_radius
         self.speed = speed
-        self.radius = VFX_SHOCKWAVE_START_RADIUS
+        self.radius = cfg.VFX_SHOCKWAVE_START_RADIUS
 
     def update(self, dt) -> bool:
         self.radius += self.speed * dt
@@ -58,18 +53,18 @@ class FloatingTextVFX:
         from src.ui.components.floating_number import FloatingNumber
         if color is None:
             color = VFX_FLOATING_TEXT_COLOR
-        self.effects.append(FloatingNumber(text, x, y, color, speed=VFX_SPAWN_SPEED, duration=VFX_SPAWN_DURATION))
+        self.effects.append(FloatingNumber(text, x, y, color, speed=cfg.VFX_SPAWN_SPEED, duration=cfg.VFX_SPAWN_DURATION))
 
     def spawn_explosion(self, x: float, y: float, color: tuple, count=None) -> None:
         if count is None:
-            count = VFX_EXPLOSION_COUNT
+            count = cfg.VFX_EXPLOSION_COUNT
         for _ in range(count):
             angle = random.uniform(0, 2 * math.pi)
-            speed = random.uniform(VFX_EXPLOSION_SPEED_RANGE[0], VFX_EXPLOSION_SPEED_RANGE[1])
+            speed = random.uniform(cfg.VFX_EXPLOSION_SPEED_RANGE[0], cfg.VFX_EXPLOSION_SPEED_RANGE[1])
             dx = math.cos(angle) * speed
             dy = math.sin(angle) * speed
-            size = random.uniform(VFX_EXPLOSION_SIZE_RANGE[0], VFX_EXPLOSION_SIZE_RANGE[1])
-            lifetime = random.uniform(VFX_EXPLOSION_LIFETIME_RANGE[0], VFX_EXPLOSION_LIFETIME_RANGE[1])
+            size = random.uniform(cfg.VFX_EXPLOSION_SIZE_RANGE[0], cfg.VFX_EXPLOSION_SIZE_RANGE[1])
+            lifetime = random.uniform(cfg.VFX_EXPLOSION_LIFETIME_RANGE[0], cfg.VFX_EXPLOSION_LIFETIME_RANGE[1])
             self.particles.append(Particle(x, y, dx, dy, color, size, lifetime))
 
     def spawn_shockwave(self, x: float, y: float, color: tuple) -> None:
@@ -86,7 +81,7 @@ class FloatingTextVFX:
             alpha = int(255 * (1.0 - s.radius / s.max_radius))
             # We draw concentric rings with faded color
             surf = pygame.Surface((int(s.radius * 2 + 4), int(s.radius * 2 + 4)), pygame.SRCALPHA)
-            pygame.draw.circle(surf, (s.color[0], s.color[1], s.color[2], alpha), (int(s.radius + 2), int(s.radius + 2)), int(s.radius), VFX_SHOCKWAVE_WIDTH)
+            pygame.draw.circle(surf, (s.color[0], s.color[1], s.color[2], alpha), (int(s.radius + 2), int(s.radius + 2)), int(s.radius), cfg.VFX_SHOCKWAVE_WIDTH)
             renderer.screen.blit(surf, (int(s.x - s.radius - 2), int(s.y - s.radius - 2)))
 
         # 2. Render Particles
@@ -99,14 +94,14 @@ class FloatingTextVFX:
         # 3. Render Floating texts
         for e in self.effects:
             alpha = int(255 * (1.0 - e.age / e.duration))
-            font = renderer.text_renderer._get_font(VFX_FONT_SIZE)
+            font = renderer.text_renderer._get_font(cfg.VFX_FONT_SIZE)
             text_surf = font.render(e.text, True, e.color)
 
             # create transparent temp surf
             temp_surf = pygame.Surface(text_surf.get_size(), pygame.SRCALPHA)
             # Render black shadow inside temp surf
             shadow_surf = font.render(e.text, True, SHADOW_COLOR)
-            temp_surf.blit(shadow_surf, (VFX_SHADOW_OFFSET[0], VFX_SHADOW_OFFSET[1]))
+            temp_surf.blit(shadow_surf, (cfg.VFX_SHADOW_OFFSET[0], cfg.VFX_SHADOW_OFFSET[1]))
             temp_surf.blit(text_surf, (0, 0))
             temp_surf.set_alpha(alpha)
 

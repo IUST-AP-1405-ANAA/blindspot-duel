@@ -4,14 +4,14 @@ SQLite Connection manager (Context Manager).
 import sqlite3
 import os
 
-from src.config.settings import DB_PATH
+import src.config.settings as cfg
 
 class DatabaseConnection:
     """
     Context manager for safely connecting and closing the database.
     """
 
-    def __init__(self, db_path=DB_PATH):
+    def __init__(self, db_path=cfg.DB_PATH):
         self.db_path = db_path
         self.conn = None
 

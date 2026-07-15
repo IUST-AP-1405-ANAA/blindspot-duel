@@ -9,14 +9,14 @@ from src.database.connection_manager import DatabaseConnection
 from src.database import queries
 from src.utils.exception_logger import ExceptionLogger
 
-from src.config.settings import DB_PATH, LEADERBOARD_LIMIT
+import src.config.settings as cfg
 
 class SQLiteRepository(IDatabase):
     """
     Provides high-level methods to interact with SQLite database.
     """
 
-    def __init__(self, db_path=DB_PATH):
+    def __init__(self, db_path=cfg.DB_PATH):
         self.db_path = db_path
         # Setup tables
         with DatabaseConnection(self.db_path) as conn:
@@ -52,7 +52,7 @@ class SQLiteRepository(IDatabase):
             ExceptionLogger.log_error(f"Error saving score: {str(e)}")
             return False
 
-    def get_top_scores(self, top_n: int = LEADERBOARD_LIMIT) -> List[LeaderboardEntryDTO]:
+    def get_top_scores(self, top_n: int = cfg.LEADERBOARD_LIMIT) -> List[LeaderboardEntryDTO]:
         """Get top player scores."""
         entries = []
         try:

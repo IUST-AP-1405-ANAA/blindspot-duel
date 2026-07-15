@@ -3,11 +3,7 @@ import math
 from src.contracts.i_state import IState
 from src.contracts.i_renderable import IRenderable
 
-from src.config.settings import (
-    MAX_USERNAME_LEN, MAX_PASSWORD_LEN, ALLOWED_CHARS,
-    AUTH_BOX_WIDTH, AUTH_BOX_HEIGHT, AUTH_BOX_X, AUTH_BOX_Y,
-    AUTH_BOX_BORDER_RADIUS, AUTH_INPUT_BORDER_RADIUS
-)
+import src.config.settings as cfg
 from src.config.colors import (
     P1_COLOR, P2_COLOR, TEXT_COLOR, AUTH_BOX_BG, INACTIVE_FIELD_BORDER,
     AUTH_LABEL_COLOR, SUCCESS_COLOR, ERROR_COLOR, FOOTER_TEXT_COLOR, FOOTER_ALT_TEXT_COLOR
@@ -63,10 +59,10 @@ class AuthScreen(IState):
                 elif event.key == pygame.K_ESCAPE:
                     self.state_manager.is_running = False
                 else:
-                    if event.unicode.isalnum() or event.unicode in ALLOWED_CHARS:
-                        if self.active_field == "username" and len(self.username_input) < MAX_USERNAME_LEN:
+                    if event.unicode.isalnum() or event.unicode in cfg.ALLOWED_CHARS:
+                        if self.active_field == "username" and len(self.username_input) < cfg.MAX_USERNAME_LEN:
                             self.username_input += event.unicode
-                        elif self.active_field == "password" and len(self.password_input) < MAX_PASSWORD_LEN:
+                        elif self.active_field == "password" and len(self.password_input) < cfg.MAX_PASSWORD_LEN:
                             self.password_input += event.unicode
 
     def submit_auth(self):
@@ -100,18 +96,18 @@ class AuthScreen(IState):
         theme_color = P1_COLOR if not self.p1_authenticated else P2_COLOR
 
         # Display title
-        renderer.draw_ui_text(AUTH_TITLE, AUTH_BOX_X, 80, color=TEXT_COLOR, size=32, align="center")
-        renderer.draw_ui_text(f"{AUTH_CONFIGURING_PREFIX}{curr_p}", AUTH_BOX_X, 130, color=theme_color, size=18, align="center")
+        renderer.draw_ui_text(AUTH_TITLE, cfg.AUTH_BOX_X, 80, color=TEXT_COLOR, size=32, align="center")
+        renderer.draw_ui_text(f"{AUTH_CONFIGURING_PREFIX}{curr_p}", cfg.AUTH_BOX_X, 130, color=theme_color, size=18, align="center")
 
         # Container box
-        box_w = AUTH_BOX_WIDTH
-        box_h = AUTH_BOX_HEIGHT
-        bx = AUTH_BOX_X - box_w // 2
-        by = AUTH_BOX_Y
+        box_w = cfg.AUTH_BOX_WIDTH
+        box_h = cfg.AUTH_BOX_HEIGHT
+        bx = cfg.AUTH_BOX_X - box_w // 2
+        by = cfg.AUTH_BOX_Y
 
         container = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
         container.fill(AUTH_BOX_BG)
-        pygame.draw.rect(container, theme_color, (0, 0, box_w, box_h), 1, border_radius=AUTH_BOX_BORDER_RADIUS)
+        pygame.draw.rect(container, theme_color, (0, 0, box_w, box_h), 1, border_radius=cfg.AUTH_BOX_BORDER_RADIUS)
         renderer.screen.blit(container, (bx, by))
 
         # Draw input boxes
@@ -119,25 +115,25 @@ class AuthScreen(IState):
         p_glow = theme_color if self.active_field == "password" else INACTIVE_FIELD_BORDER
 
         # Username input box
-        pygame.draw.rect(renderer.screen, u_glow, (bx + 140, by + 40, 280, 36), 1, border_radius=AUTH_INPUT_BORDER_RADIUS)
+        pygame.draw.rect(renderer.screen, u_glow, (bx + 140, by + 40, 280, 36), 1, border_radius=cfg.AUTH_INPUT_BORDER_RADIUS)
         renderer.draw_ui_text(AUTH_LABEL_USERNAME, bx + 20, by + 48, color=AUTH_LABEL_COLOR, size=16)
         renderer.draw_ui_text(self.username_input, bx + 150, by + 48, color=TEXT_COLOR, size=16)
 
         # Password input box
-        pygame.draw.rect(renderer.screen, p_glow, (bx + 140, by + 110, 280, 36), 1, border_radius=AUTH_INPUT_BORDER_RADIUS)
+        pygame.draw.rect(renderer.screen, p_glow, (bx + 140, by + 110, 280, 36), 1, border_radius=cfg.AUTH_INPUT_BORDER_RADIUS)
         renderer.draw_ui_text(AUTH_LABEL_PASSWORD, bx + 20, by + 118, color=AUTH_LABEL_COLOR, size=16)
         masked_pass = "*" * len(self.password_input)
         renderer.draw_ui_text(masked_pass, bx + 150, by + 118, color=TEXT_COLOR, size=16)
 
         # Error/Success
         if self.error_message:
-            renderer.draw_ui_text(self.error_message, AUTH_BOX_X, by + 185, color=ERROR_COLOR, size=14, align="center")
+            renderer.draw_ui_text(self.error_message, cfg.AUTH_BOX_X, by + 185, color=ERROR_COLOR, size=14, align="center")
         elif self.success_message:
-            renderer.draw_ui_text(self.success_message, AUTH_BOX_X, by + 185, color=SUCCESS_COLOR, size=14, align="center")
+            renderer.draw_ui_text(self.success_message, cfg.AUTH_BOX_X, by + 185, color=SUCCESS_COLOR, size=14, align="center")
 
         # Footers
-        renderer.draw_ui_text(AUTH_FOOTER_NAV, AUTH_BOX_X, 460, color=FOOTER_TEXT_COLOR, size=12, align="center")
-        renderer.draw_ui_text(AUTH_FOOTER_EXIT, AUTH_BOX_X, 490, color=FOOTER_ALT_TEXT_COLOR, size=12, align="center")
+        renderer.draw_ui_text(AUTH_FOOTER_NAV, cfg.AUTH_BOX_X, 460, color=FOOTER_TEXT_COLOR, size=12, align="center")
+        renderer.draw_ui_text(AUTH_FOOTER_EXIT, cfg.AUTH_BOX_X, 490, color=FOOTER_ALT_TEXT_COLOR, size=12, align="center")
 
     def exit(self) -> None:
         pass

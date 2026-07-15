@@ -6,7 +6,7 @@ import os
 from src.contracts.i_audio_player import IAudioPlayer
 from src.utils.exception_logger import ExceptionLogger
 
-from src.config.settings import ASSETS_DIR, SOUNDS_SUBDIR
+import src.config.settings as cfg
 
 class AudioManager(IAudioPlayer):
     """
@@ -21,8 +21,8 @@ class AudioManager(IAudioPlayer):
             ExceptionLogger.log_warning(f"Could not initialize audio mixer (continuing muted): {str(e)}")
             self.muted = True
             
-        from src.config.settings import MASTER_VOLUME
-        self.volume = MASTER_VOLUME
+        import src.config.settings as cfg
+        self.volume = cfg.MASTER_VOLUME
         
         self.sound_cache = {}
 
@@ -40,7 +40,7 @@ class AudioManager(IAudioPlayer):
             return
             
         if sound_name not in self.sound_cache:
-            path = os.path.join(ASSETS_DIR, SOUNDS_SUBDIR, f"{sound_name}.wav")
+            path = os.path.join(cfg.ASSETS_DIR, cfg.SOUNDS_SUBDIR, f"{sound_name}.wav")
             if not os.path.exists(path):
                 # Silent skip to avoid crashes
                 return
@@ -63,7 +63,7 @@ class AudioManager(IAudioPlayer):
             return
             
         for ext in [".mp3", ".ogg", ".wav"]:
-            path = os.path.join(ASSETS_DIR, SOUNDS_SUBDIR, f"{track_name}{ext}")
+            path = os.path.join(cfg.ASSETS_DIR, cfg.SOUNDS_SUBDIR, f"{track_name}{ext}")
             if os.path.exists(path):
                 break
         else:

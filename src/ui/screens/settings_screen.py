@@ -4,7 +4,7 @@ from src.contracts.i_state import IState
 from src.contracts.i_renderable import IRenderable
 import src.config.settings as settings_module
 from src.config.config_manager import ConfigManager
-from src.config.settings import WIDTH, HEIGHT
+import src.config.settings as cfg
 from src.config.messages import SETTINGS_TITLE, SETTINGS_SUBTITLE, SETTINGS_FOOTER
 from src.config.colors import (
     MENU_TITLE_COLOR, MENU_SUBTITLE_COLOR, MENU_SELECT_BORDER_COLOR,
@@ -99,8 +99,8 @@ class SettingsScreen(IState):
         renderer.clear_screen(BG_COLOR)
 
         # Title
-        renderer.draw_ui_text(SETTINGS_TITLE, WIDTH // 2, 80, color=MENU_TITLE_COLOR, size=36, align="center")
-        renderer.draw_ui_text(SETTINGS_SUBTITLE, WIDTH // 2, 120, color=MENU_SUBTITLE_COLOR, size=14, align="center")
+        renderer.draw_ui_text(SETTINGS_TITLE, cfg.WIDTH // 2, 80, color=MENU_TITLE_COLOR, size=36, align="center")
+        renderer.draw_ui_text(SETTINGS_SUBTITLE, cfg.WIDTH // 2, 120, color=MENU_SUBTITLE_COLOR, size=14, align="center")
 
         # List items
         start_y = 180
@@ -110,7 +110,7 @@ class SettingsScreen(IState):
             y_pos = start_y + (i - self.scroll_offset) * spacing
 
             # Hide items outside view
-            if y_pos < 150 or y_pos > HEIGHT - 100:
+            if y_pos < 150 or y_pos > cfg.HEIGHT - 100:
                 continue
 
             is_active = (self.selected == i)
@@ -127,12 +127,12 @@ class SettingsScreen(IState):
             display_str = f"{label_str}: < {val_str} >" if is_active else f"{label_str}:   {val_str}  "
 
             if is_active:
-                pygame.draw.rect(renderer.screen, MENU_SELECT_BORDER_COLOR, (WIDTH // 2 - 200, y_pos - 20, 400, 40), 1, border_radius=4)
+                pygame.draw.rect(renderer.screen, MENU_SELECT_BORDER_COLOR, (cfg.WIDTH // 2 - 200, y_pos - 20, 400, 40), 1, border_radius=4)
 
-            renderer.draw_ui_text(display_str, WIDTH // 2, y_pos - 8, color=color, size=20, align="center")
+            renderer.draw_ui_text(display_str, cfg.WIDTH // 2, y_pos - 8, color=color, size=20, align="center")
 
         # Footer
-        renderer.draw_ui_text(SETTINGS_FOOTER, WIDTH // 2, HEIGHT - 40, color=MENU_FOOTER_COLOR, size=12, align="center")
+        renderer.draw_ui_text(SETTINGS_FOOTER, cfg.WIDTH // 2, cfg.HEIGHT - 40, color=MENU_FOOTER_COLOR, size=12, align="center")
 
     def exit(self) -> None:
         pass

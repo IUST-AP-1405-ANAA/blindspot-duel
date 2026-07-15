@@ -22,9 +22,9 @@ def initialize_app() -> GameEngine:
     
     # Initialize pygame
     pygame.init()
-    from src.config.settings import WIDTH, HEIGHT, GAME_TITLE
-    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE | pygame.DOUBLEBUF)
-    pygame.display.set_caption(GAME_TITLE)
+    import src.config.settings as cfg
+    screen = pygame.display.set_mode((cfg.WIDTH, cfg.HEIGHT), pygame.SCALED | pygame.RESIZABLE | pygame.DOUBLEBUF)
+    pygame.display.set_caption(cfg.GAME_TITLE)
     
     # Instantiate lower-level adapters
     db = SQLiteRepository()
