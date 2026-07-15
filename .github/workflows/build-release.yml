@@ -8,6 +8,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -36,11 +39,11 @@ jobs:
 
     - name: Build with PyInstaller (Linux/Mac)
       if: runner.os != 'Windows'
-      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets:assets" --name blindspot-duel run.py
+      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets:assets" --name blindspot-duel-${{ runner.os }} run.py
 
     - name: Build with PyInstaller (Windows)
       if: runner.os == 'Windows'
-      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets;assets" --name blindspot-duel.exe run.py
+      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets;assets" --name blindspot-duel-${{ runner.os }}.exe run.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -49,3 +52,9 @@ jobs:
         path: |
           dist/blindspot-duel*
           !dist/*.app
+
+    - name: Release to GitHub
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/blindspot-duel-*
