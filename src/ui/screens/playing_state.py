@@ -156,6 +156,10 @@ class PlayingState(IState):
 
         # 3. Draw Dashboard HUD
         self.hud.draw(self.p1, self.p2, renderer.screen)
+        
+        # Draw Pause Hint
+        if not self.is_paused:
+            renderer.draw_ui_text("Press ESC to Pause", cfg.WIDTH / 2, cfg.HEIGHT - 20, size=18, color=TEXT_COLOR, align="center")
 
         # 4. Draw Pause Overlay
         if self.is_paused:
