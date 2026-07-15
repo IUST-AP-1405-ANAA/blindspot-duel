@@ -2,7 +2,7 @@ from src.entities.base.game_object import GameObject
 from src.contracts.i_collidable import ICollidable
 import math
 
-from src.config.settings import TARGET_RADIUS, DEFAULT_BASE_SCORE
+import src.config.settings as cfg
 
 
 class Target(GameObject, ICollidable):
@@ -10,7 +10,7 @@ class Target(GameObject, ICollidable):
     Base class for standard targets and special items.
     """
 
-    def __init__(self, x: float, y: float, radius: float = TARGET_RADIUS, base_score: int = DEFAULT_BASE_SCORE):
+    def __init__(self, x: float, y: float, radius: float = cfg.TARGET_RADIUS, base_score: int = cfg.DEFAULT_BASE_SCORE):
         super().__init__(x, y)
         self._validate_target_values(radius, base_score)
         self._radius = radius

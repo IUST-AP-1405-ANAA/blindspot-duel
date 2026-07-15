@@ -1,6 +1,6 @@
 import pygame
 
-from src.config.settings import FONT_NAME, FONT_SHADOW_OFFSET, DEFAULT_FONT_SIZE
+import src.config.settings as cfg
 from src.config.colors import TEXT_COLOR, SHADOW_COLOR
 
 
@@ -15,14 +15,14 @@ class TextRenderer:
 
     def _get_font(self, size: int):
         if size not in self.fonts:
-            self.fonts[size] = pygame.font.SysFont(FONT_NAME, size, bold=True)
+            self.fonts[size] = pygame.font.SysFont(cfg.FONT_NAME, size, bold=True)
         return self.fonts[size]
 
     def render_text(self, text: str, x: float, y: float, surface, color=None, size=None, align="left") -> None:
         if color is None:
             color = TEXT_COLOR
         if size is None:
-            size = DEFAULT_FONT_SIZE
+            size = cfg.DEFAULT_FONT_SIZE
 
         font = self._get_font(size)
 
@@ -35,7 +35,7 @@ class TextRenderer:
         rect = text_surface.get_rect()
 
         # Alignment mapping
-        offset = FONT_SHADOW_OFFSET
+        offset = cfg.FONT_SHADOW_OFFSET
         if align == "center":
             rect.center = (int(x), int(y))
             shadow_rect.center = (int(x) + offset, int(y) + offset)

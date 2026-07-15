@@ -3,14 +3,14 @@ Time management.
 """
 import pygame
 
-from src.config.settings import FPS
+import src.config.settings as cfg
 
 class DeltaClock:
     """
     Manages delta time calculation for frame-rate independence.
     """
 
-    def __init__(self, target_fps: int = FPS):
+    def __init__(self, target_fps: int = cfg.FPS):
         self.clock = pygame.time.Clock()
         self.target_fps = target_fps
 

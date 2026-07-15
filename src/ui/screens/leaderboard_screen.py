@@ -5,11 +5,7 @@ import pygame
 from src.contracts.i_state import IState
 from src.contracts.i_renderable import IRenderable
 
-from src.config.settings import (
-    LEADERBOARD_LIMIT, LEADERBOARD_BOX_X, LEADERBOARD_BOX_Y,
-    LEADERBOARD_BOX_WIDTH, LEADERBOARD_BOX_HEIGHT, LEADERBOARD_BOX_BORDER_RADIUS,
-    LEADERBOARD_ROW_Y_START, LEADERBOARD_ROW_Y_SPACING
-)
+import src.config.settings as cfg
 from src.config.colors import (
     LEADERBOARD_TITLE_COLOR, LEADERBOARD_SUBTITLE_COLOR, LEADERBOARD_PANEL_BG,
     LEADERBOARD_BORDER_COLOR, LEADERBOARD_HEADER_COLOR, LEADERBOARD_LINE_COLOR,
@@ -34,7 +30,7 @@ class LeaderboardScreen(IState):
         self.leaderboard_entries = []
 
     def enter(self) -> None:
-        self.leaderboard_entries = self.database.get_top_scores(LEADERBOARD_LIMIT)
+        self.leaderboard_entries = self.database.get_top_scores(cfg.LEADERBOARD_LIMIT)
 
     def update(self, dt: float, commands: dict) -> None:
         for event in commands["raw_events"]:
@@ -49,14 +45,14 @@ class LeaderboardScreen(IState):
         renderer.draw_ui_text(LEADERBOARD_SUBTITLE, 400, 100, color=LEADERBOARD_SUBTITLE_COLOR, size=12, align="center")
 
         # Leaderboard panel container
-        bx = LEADERBOARD_BOX_X
-        by = LEADERBOARD_BOX_Y
-        bw = LEADERBOARD_BOX_WIDTH
-        bh = LEADERBOARD_BOX_HEIGHT
+        bx = cfg.LEADERBOARD_BOX_X
+        by = cfg.LEADERBOARD_BOX_Y
+        bw = cfg.LEADERBOARD_BOX_WIDTH
+        bh = cfg.LEADERBOARD_BOX_HEIGHT
 
         container = pygame.Surface((bw, bh), pygame.SRCALPHA)
         container.fill(LEADERBOARD_PANEL_BG)
-        pygame.draw.rect(container, LEADERBOARD_BORDER_COLOR, (0, 0, bw, bh), 1, border_radius=LEADERBOARD_BOX_BORDER_RADIUS)
+        pygame.draw.rect(container, LEADERBOARD_BORDER_COLOR, (0, 0, bw, bh), 1, border_radius=cfg.LEADERBOARD_BOX_BORDER_RADIUS)
         renderer.screen.blit(container, (bx, by))
 
         # Headers
@@ -72,7 +68,7 @@ class LeaderboardScreen(IState):
             renderer.draw_ui_text(LEADERBOARD_NO_DATA, 400, by + 180, color=LEADERBOARD_NO_DATA_COLOR, size=18, align="center")
         else:
             for i, entry in enumerate(self.leaderboard_entries):
-                y_pos = by + LEADERBOARD_ROW_Y_START + i * LEADERBOARD_ROW_Y_SPACING
+                y_pos = by + cfg.LEADERBOARD_ROW_Y_START + i * cfg.LEADERBOARD_ROW_Y_SPACING
 
                 # Rank coloring
                 if i == 0:
