@@ -9,7 +9,7 @@
 در این بازی هیچ‌یک از بازیکنان مکان نشانگر (Aim) خود را نمی‌دانند! نشانگرها تنها با اولین شلیک نمایان می‌شوند که چالش و هیجان بازی را دوچندان می‌کند.
 
 ### 🎥 ویدیو گیم‌پلی بازی
-![Gameplay Demo](docs/media/gameplay_demo.mp4)
+<video src="https://github.com/IUST-AP-1405-ANAA/blindspot-duel/raw/main/docs/media/gameplay_demo.mp4" controls="controls" width="100%"></video>
 
 ---
 
