@@ -2,7 +2,7 @@
 Maps raw inputs to logical game actions.
 """
 import pygame
-from src.config.keybinds import P1_KEYS, P2_KEYS
+from src.config.keybinds import P1_KEYS, P2_KEYS, GLOBAL_KEYS
 
 class InputMapper:
     """
@@ -28,20 +28,24 @@ class InputMapper:
         if keys[P2_KEYS["UP"]]: p2_dy -= 1
         if keys[P2_KEYS["DOWN"]]: p2_dy += 1
 
-        # Check for shoot trigger events
+        # Check for shoot trigger events and pause
         p1_shoot = False
         p2_shoot = False
+        pause_toggle = False
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == P1_KEYS["SHOOT"]:
                     p1_shoot = True
                 elif event.key == P2_KEYS["SHOOT"]:
                     p2_shoot = True
+                elif event.key == GLOBAL_KEYS["PAUSE"]:
+                    pause_toggle = True
 
         return {
             "p1_move": (p1_dx, p1_dy),
             "p2_move": (p2_dx, p2_dy),
             "p1_shoot": p1_shoot,
             "p2_shoot": p2_shoot,
+            "pause_toggle": pause_toggle,
             "raw_events": events
         }

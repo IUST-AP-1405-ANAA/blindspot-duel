@@ -1,0 +1,51 @@
+name: Build Executables
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Generate Sound Assets
+      run: python generate_sounds.py
+
+    - name: Build with PyInstaller (Linux/Mac)
+      if: runner.os != 'Windows'
+      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets:assets" --name blindspot-duel src/main.py
+
+    - name: Build with PyInstaller (Windows)
+      if: runner.os == 'Windows'
+      run: pyinstaller --noconfirm --onefile --windowed --add-data "assets;assets" --name blindspot-duel.exe src/main.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: blindspot-duel-${{ runner.os }}
+        path: |
+          dist/blindspot-duel*
+          !dist/*.app

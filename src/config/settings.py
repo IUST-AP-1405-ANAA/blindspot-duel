@@ -149,8 +149,16 @@ VFX_EXPLOSION_SPEED_RANGE = (30.0, 100.0)
 VFX_EXPLOSION_SIZE_RANGE = (2.0, 5.0)
 VFX_EXPLOSION_LIFETIME_RANGE = (0.3, 0.6)
 
+import sys
+import os
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    BASE_DIR = sys._MEIPASS
+else:
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Resource loading details
-ASSETS_DIR = "assets"
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 SOUNDS_SUBDIR = "sounds"
 IMAGES_SUBDIR = "images"
 FALLBACK_IMAGE_SIZE = (50, 50)

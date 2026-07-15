@@ -3,6 +3,10 @@ Keybindings mapping.
 """
 import pygame
 
+GLOBAL_KEYS = {
+    "PAUSE": pygame.K_ESCAPE
+}
+
 P1_KEYS = {
     "UP": pygame.K_w,
     "DOWN": pygame.K_s,

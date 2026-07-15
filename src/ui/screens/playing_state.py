@@ -28,6 +28,7 @@ class PlayingState(IState):
         self.state_manager = state_manager
         self.engine = engine
         self.hud = PlayerDashboard()
+        self.is_paused = False
 
     def enter(self) -> None:
         self.p1 = Player(self.state_manager.p1_username, cfg.DEFAULT_AMMO, cfg.DEFAULT_TIME)
@@ -44,6 +45,15 @@ class PlayingState(IState):
         self.p2_last_hit = None
 
     def update(self, dt: float, commands: dict) -> None:
+        if commands.get("pause_toggle"):
+            self.is_paused = not self.is_paused
+
+        if self.is_paused:
+            for event in commands["raw_events"]:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                    self.state_manager.change_state("MAIN_MENU")
+            return
+
         self.p1.update_time(dt)
         self.p2.update_time(dt)
 
@@ -146,6 +156,14 @@ class PlayingState(IState):
 
         # 3. Draw Dashboard HUD
         self.hud.draw(self.p1, self.p2, renderer.screen)
+
+        # 4. Draw Pause Overlay
+        if self.is_paused:
+            overlay = pygame.Surface((cfg.WIDTH, cfg.HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            renderer.screen.blit(overlay, (0, 0))
+            renderer.draw_ui_text("PAUSED", cfg.WIDTH / 2, cfg.HEIGHT / 2 - 30, size=48, color=TEXT_COLOR, align="center")
+            renderer.draw_ui_text("Press ESC to Resume | Press Q to Quit", cfg.WIDTH / 2, cfg.HEIGHT / 2 + 30, size=24, color=TEXT_COLOR, align="center")
 
     def draw_crosshair_reticle(self, surface, x: float, y: float, color: tuple) -> None:
         # Crosshair drawing: reticle circle + cross lines
