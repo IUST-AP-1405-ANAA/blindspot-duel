@@ -31,9 +31,19 @@ class GameObject:
     def x(self) -> float:
         return self._x
 
+    @x.setter
+    def x(self, value: float) -> None:
+        self._check_coordinates(value, self._y)
+        self._x = value
+
     @property
     def y(self) -> float:
         return self._y
+
+    @y.setter
+    def y(self, value: float) -> None:
+        self._check_coordinates(self._x, value)
+        self._y = value
 
     @property
     def coordinates(self) -> tuple[float, float]:
